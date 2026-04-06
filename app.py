@@ -96,6 +96,30 @@ CSS = """
 #voice_input > div { min-height: 80px !important; display: flex !important; flex-direction: column !important; justify-content: center !important; }
 
 #voice_input select { display: none !important; }
+
+/* Remove all loading animations and spinners */
+.generating { display: none !important; }
+.eta-bar { display: none !important; }
+.progress-bar { display: none !important; }
+.progress-level { display: none !important; }
+.progress-level-inner { display: none !important; }
+.meta-text { display: none !important; }
+.meta-text-center { display: none !important; }
+.loader { display: none !important; }
+.wrap.default.full.unpad_bottom.hide { display: none !important; }
+
+/* Remove image upload animation/overlay */
+.image-container .overlay { display: none !important; }
+.upload-container .overlay { display: none !important; }
+.image-frame .overlay { display: none !important; }
+.pending { animation: none !important; opacity: 1 !important; }
+.uploading { animation: none !important; }
+
+/* Disable all pulse/fade animations globally */
+* { animation-duration: 0s !important; transition-duration: 0s !important; }
+
+/* But keep button hover transitions readable */
+button { transition: background-color 0.1s !important; }
 """
 
 CLEANUP_JS = """

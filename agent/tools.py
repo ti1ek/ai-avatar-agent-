@@ -121,14 +121,18 @@ async def analyze_restaurant_photo(image_url: str) -> dict:
     Returns: level, status, description, confidence.
     """
     prompt = (
-        "You are an expert restaurant critic. Analyze this photo of a restaurant "
-        "(interior, food, or signage) and respond ONLY with valid JSON:\n"
+        "Ты эксперт-ресторанный критик. Внимательно изучи фото ресторана "
+        "(интерьер, вывеска, зал, атмосфера) и ответь ТОЛЬКО валидным JSON без пояснений:\n"
         "{\n"
         '  "level": "<fastfood|casual|mid-range|fine dining>",\n'
-        '  "status": "<семейный|романтический|бизнес-ланч|молодёжный|fine dining>",\n'
-        '  "description": "<2-3 sentence atmosphere and audience description in Russian>",\n'
+        '  "status": "<семейный|романтический|бизнес-ланч|молодёжный|вечеринки>",\n'
+        '  "description": "<2-3 предложения: атмосфера заведения и целевая аудитория на русском>",\n'
         '  "confidence": <0.0-1.0>\n'
-        "}"
+        "}\n\n"
+        "level — уровень заведения: fastfood (фастфуд), casual (повседневный), "
+        "mid-range (средний ценовой сегмент), fine dining (высокая кухня).\n"
+        "status — основная аудитория и атмосфера: семейный, романтический, бизнес-ланч, молодёжный, вечеринки.\n"
+        "description — кратко опиши атмосферу и для кого подходит это заведение."
     )
 
     messages = [
