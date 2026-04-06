@@ -1,19 +1,11 @@
 """
-LLM brain: OpenAI GPT-4o-mini + MCP tool calling + conversation memory.
-
-Flow:
-  1. Start MCP server processes (2GIS, Chocolife, ABR Group)
-  2. Connect via stdio, collect available tools
-  3. Run LLM with OpenAI function calling
-  4. Execute tool calls through MCP clients OR local skill functions
-  5. Return final text response + list of tool calls made
+LLM agent with MCP tool calling and conversation memory.
 """
 import asyncio
-import base64
 import json
 import os
+import re
 import sys
-from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Any
 
@@ -42,8 +34,8 @@ SYSTEM_PROMPT = """Ты — ИИ-аватар, персональный асси
 - Для общего поиска ресторанов (по кухне, району, бюджету, атмосфере) — используй search_restaurants (2GIS)
 - Если спрашивают о скидках/акциях — используй search_deals (Chocolife)
 - Если спрашивают о конкретном ресторане ABR Group (Del Papa, AUYL, SPIROS и др.) — используй get_restaurant_info
-- Давай конкретные рекомендации: уровень заведения, атмосфера, для кого подходит, стоит ли идти
-- Отвечай лаконично: максимум 3–4 предложения (ответ будет озвучен голосом)
+- Давай не более 2 рекомендаций: название, рейтинг, адрес одной фразой
+- Отвечай лаконично: 2-3 предложения, БЕЗ markdown-списков, БЕЗ ссылок — ответ озвучивается голосом
 - Никогда не пиши "Продолжение следует...", "To be continued" или любые обрывающие фразы
 - Помни историю разговора в рамках сессии
 """
@@ -227,6 +219,7 @@ class MCPAgentSession:
                 # Remove continuation markers added by LLM
                 for marker in ["Продолжение следует...", "Продолжение следует", "To be continued..."]:
                     text = text.replace(marker, "").strip()
+                text = re.sub(r'\[([^\]]+)\]\([^)]+\)', r'\1', text)
                 # Trim to MAX_RESPONSE_CHARS for TTS cost
                 if len(text) > MAX_RESPONSE_CHARS:
                     text = text[:MAX_RESPONSE_CHARS].rsplit(".", 1)[0] + "."

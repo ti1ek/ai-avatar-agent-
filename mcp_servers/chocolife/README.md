@@ -1,45 +1,45 @@
-# MCP №1: Chocolife
+# MCP #2: Chocolife
 
-Поиск скидок и акций на рестораны Алматы через парсинг [chocolife.me](https://chocolife.me).
+Search deals and discounts for Almaty restaurants by scraping [chocolife.me](https://chocolife.me).
 
-## Инструмент
+## Tool
 
 ### `search_deals`
 
-Возвращает список актуальных акций с сайта Chocolife.
+Returns a list of current deals from Chocolife.
 
-**Параметры:**
+**Parameters:**
 
-| Параметр | Тип | По умолчанию | Описание |
-|----------|-----|--------------|----------|
-| `category` | string | `"рестораны"` | Категория акции: `рестораны`, `суши`, `бизнес-ланч` и др. |
-| `city` | string | `"Алматы"` | Город поиска |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `category` | string | `"рестораны"` | Deal category: `рестораны`, `суши`, `бизнес-ланч`, etc. |
+| `city` | string | `"Алматы"` | City name |
 
-**Пример ответа:**
+**Example response:**
 
 ```json
 [
   {
-    "title": "Скидка 30% на все меню в ресторане Flamingo!",
-    "restaurant_name": "Ресторан Flamingo",
+    "title": "30% off entire menu at Flamingo!",
+    "restaurant_name": "Flamingo",
     "original_price": 5000,
     "discount_price": 3500,
     "discount_percent": 30,
-    "description": "Скидка 30% на все меню в ресторане Flamingo!",
+    "description": "30% off entire menu at Flamingo!",
     "url": "https://chocolife.me/12345-flamingo/"
   }
 ]
 ```
 
-## Реализация
+## Implementation
 
-- **Парсинг**: Playwright (headless Chromium) — сайт использует Angular SSR
-- **Селекторы**: компонент `<cl-deal>`, название ресторана из `.deal__desc span:first-child`
-- **Лимит**: первые 10 акций за запрос
-- **Кэш**: 5 минут (`CACHE_TTL = 300`)
-- **Протокол**: MCP stdio
+- **Scraping**: Playwright (headless Chromium) — the site uses Angular SSR
+- **Selectors**: `<cl-deal>` component, restaurant name from `.deal__desc span:first-child`
+- **Limit**: first 10 deals per query
+- **Cache**: 5 minutes (`CACHE_TTL = 300`)
+- **Protocol**: MCP stdio
 
-## Запуск (для отладки)
+## Run (for debugging)
 
 ```bash
 python mcp_servers/chocolife/server.py

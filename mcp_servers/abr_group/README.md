@@ -1,50 +1,50 @@
-# MCP №2: ABR Group
+# MCP #3: ABR Group
 
-Информация о ресторанах сети ABR Group через парсинг [abr.kz](https://abr.kz).
+Restaurant info for ABR Group chain by scraping [abr.kz](https://abr.kz).
 
-## Инструмент
+## Tool
 
 ### `get_restaurant_info`
 
-Возвращает детальную информацию о ресторане ABR Group по названию.
+Returns detailed info about an ABR Group restaurant by name.
 
-**Параметры:**
+**Parameters:**
 
-| Параметр | Тип | Обязателен | Описание |
-|----------|-----|------------|----------|
-| `name` | string | да | Название ресторана, например `Del Papa`, `AUYL`, `SPIROS` |
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `name` | string | yes | Restaurant name, e.g. `Del Papa`, `AUYL`, `SPIROS` |
 
-**Доступные рестораны:**
-Del Papa, AUYL, SPIROS, cafe Alma, Astra Grand Cafe, CANTEEN, PALOMAR, Ami, Aroma, JINAU, Broadway Burger, Кафе Афиша, Cafeteria, Огонёк, Luckee Yu, Дареджани, COCO, RAW
+**Available restaurants:**
+Del Papa, AUYL, SPIROS, cafe Alma, Astra Grand Cafe, CANTEEN, PALOMAR, Ami, Aroma, JINAU, Broadway Burger, Cafeteria, and more.
 
-**Пример ответа:**
+**Example response:**
 
 ```json
 {
   "name": "Del Papa",
   "address": [
-    "б-р. Бухар жырау, 66",
-    "ул. Гоголя, 87",
-    "ТРЦ Dostyk Plaza"
+    "Bukhar Zhyrau blvd., 66",
+    "Gogol st., 87",
+    "Dostyk Plaza mall"
   ],
   "phone": "+7 771 722 82 21",
-  "working_hours": "Пн-Вс с 10:00 до 23:00",
+  "working_hours": "Mon-Sun 10:00-23:00",
   "booking_url": "https://booking-web.abr.dev/",
-  "description": "Сеть уютных итальянских ресторанов с классикой итальянской кухни.",
+  "description": "Chain of cozy Italian restaurants with classic Italian cuisine.",
   "menu_highlights": [],
   "average_check": ""
 }
 ```
 
-## Реализация
+## Implementation
 
-- **Парсинг**: Playwright (headless Chromium)
-- **Slug-поиск**: динамически определяется через парсинг главной страницы `abr.kz`
-- **Адреса**: поддерживает одно- и многолокационные рестораны (паттерн: город → адрес → Контакты → телефон → Работаем → часы)
-- **Кэш**: 10 минут (`CACHE_TTL = 600`)
-- **Протокол**: MCP stdio
+- **Scraping**: Playwright (headless Chromium)
+- **Slug lookup**: dynamically resolved by parsing the abr.kz homepage
+- **Addresses**: supports single- and multi-location restaurants
+- **Cache**: 10 minutes (`CACHE_TTL = 600`)
+- **Protocol**: MCP stdio
 
-## Запуск (для отладки)
+## Run (for debugging)
 
 ```bash
 python mcp_servers/abr_group/server.py

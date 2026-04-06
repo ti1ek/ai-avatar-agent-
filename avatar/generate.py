@@ -2,17 +2,11 @@
 Avatar video generation via fal.ai Kling Avatar V2.
 Combines student photo + cloned TTS audio → talking avatar video.
 """
-import asyncio
-import os
-import tempfile
 from pathlib import Path
 
 import fal_client
-import httpx
 
-from config import FAL_KEY, AVATAR_MODEL, AVATAR_PHOTO_PATH
-
-os.environ["FAL_KEY"] = FAL_KEY
+from config import AVATAR_MODEL, AVATAR_PHOTO_PATH
 
 _avatar_photo_url: str | None = None
 

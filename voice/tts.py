@@ -1,17 +1,12 @@
 """
 Text-to-Speech via fal.ai MiniMax Speech-02-HD using cloned voice.
 """
-import asyncio
-import os
 import tempfile
-from pathlib import Path
 
 import fal_client
 import httpx
 
-from config import FAL_KEY, TTS_MODEL, MINIMAX_VOICE_ID, TTS_LANGUAGE
-
-os.environ["FAL_KEY"] = FAL_KEY
+from config import TTS_MODEL, MINIMAX_VOICE_ID, TTS_LANGUAGE
 
 
 async def generate_tts(text: str) -> str:

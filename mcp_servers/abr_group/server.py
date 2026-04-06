@@ -1,10 +1,9 @@
 """
-MCP-сервер №2: ABR Group
-Информация о ресторанах сети ABR Group через парсинг abr.kz (Playwright).
-Запуск: python mcp_servers/abr_group/server.py
-Протокол: stdio
+MCP server #3: ABR Group
+Restaurant info for ABR Group chain by scraping abr.kz (Playwright).
+Run: python mcp_servers/abr_group/server.py
+Protocol: stdio
 """
-import asyncio
 import json
 import re
 import time

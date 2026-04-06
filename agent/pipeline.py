@@ -112,9 +112,8 @@ async def run_pipeline(
     # ── Step 3: LLM + MCP tool calling ────────────────────────────────────────
     print(f"[LLM] Calling session.chat, text_len={len(enriched_user_text)}, has_image={image_url is not None}", flush=True)
     try:
-        import asyncio as _asyncio
         session = await get_mcp_session()
-        assistant_text, tool_calls = await _asyncio.wait_for(
+        assistant_text, tool_calls = await asyncio.wait_for(
             session.chat(
                 history=conversation_history,
                 user_text=enriched_user_text,
@@ -123,7 +122,7 @@ async def run_pipeline(
             timeout=60.0,
         )
         print(f"[LLM] Done: {assistant_text[:80]!r}", flush=True)
-    except _asyncio.TimeoutError:
+    except asyncio.TimeoutError:
         print("[LLM] Timeout after 60s", flush=True)
         assistant_text = "Извините, запрос занял слишком много времени. Попробуйте ещё раз."
         tool_calls = []

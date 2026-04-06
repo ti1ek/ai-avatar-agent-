@@ -1,57 +1,57 @@
-# AI Avatar Agent — Мультимодальный ресторанный гид Алматы
+# AI Avatar Agent — Multimodal Restaurant Guide for Almaty
 
-Персональный ИИ-ассистент по ресторанам Алматы с говорящим аватаром.
+A personal AI assistant for Almaty restaurants with a talking avatar. Accepts text, voice, and image input. Responds with text and video featuring a cloned voice avatar.
 
-## Архитектура
+## Architecture
 
 ```
-Пользователь (текст / голос / фото)
-        │
-        ▼
-   ASR (Whisper)          ← расшифровка голоса
-        │
-        ▼
-   LLM GPT-4o-mini        ← мозг агента + memory сессии
+User (text / voice / photo)
+        |
+        v
+   ASR (Whisper)            <- speech-to-text
+        |
+        v
+   LLM GPT-4o-mini          <- agent brain + session memory
    + Function Calling
-        │
-   ┌────┼────────────────────┐
-   │    │                    │
-   ▼    ▼                    ▼
-MCP №1        MCP №2       MCP №3      Custom Skill
-2GIS          Chocolife    ABR Group   analyze_restaurant_photo
-search_        search_      get_        (GPT-4o-mini vision)
+        |
+   +----|--------------------+
+   |    |                    |
+   v    v                    v
+MCP #1        MCP #2       MCP #3        Custom Skill
+2GIS          Chocolife    ABR Group     analyze_restaurant_photo
+search_       search_      get_          (GPT-4o-mini vision)
 restaurants   deals        restaurant_info
-        │
-        ▼
-   Текстовый ответ
-        │
-        ├──→ TTS (fal.ai MiniMax Speech-02-HD, клонированный голос)
-        │                    │
-        │                    ▼
-        └──→ Avatar Video (fal.ai Kling AI Avatar V2) ← фото студента
-                             │
-                             ▼
-                       Gradio UI (текст + видео)
+        |
+        v
+   Text response
+        |
+        +---> TTS (fal.ai MiniMax Speech-02-HD, cloned voice)
+        |                    |
+        |                    v
+        +---> Avatar Video (fal.ai Kling AI Avatar V2) <- student photo
+                             |
+                             v
+                       Gradio UI (text + video)
 ```
 
-## Компоненты
+## Components
 
-| Компонент | Технология |
+| Component | Technology |
 |-----------|-----------|
 | ASR | OpenAI Whisper-1 |
 | LLM Brain | GPT-4o-mini (tool calling + vision) |
-| MCP №1 | 2GIS — поиск ресторанов Алматы |
-| MCP №2 | Chocolife — скидки и акции на рестораны |
-| MCP №3 | ABR Group — детальная информация о ресторанах |
-| Custom Skill | Ресторанный критик (analyze_restaurant_photo) |
+| MCP #1 | 2GIS — restaurant search in Almaty |
+| MCP #2 | Chocolife — deals and discounts |
+| MCP #3 | ABR Group — detailed restaurant info |
+| Custom Skill | Restaurant critic (analyze_restaurant_photo) |
 | TTS | fal.ai MiniMax Speech-02-HD |
 | Voice Clone | fal.ai MiniMax Voice Clone |
 | Avatar Video | fal.ai Kling AI Avatar V2 |
 | Frontend | Gradio |
 
-## Быстрый старт
+## Quick Start
 
-### 1. Клонировать и установить зависимости
+### 1. Clone and install dependencies
 
 ```bash
 git clone <repo>
@@ -62,97 +62,104 @@ pip install -r requirements.txt
 python -m playwright install chromium
 ```
 
-### 2. Настроить переменные окружения
+### 2. Configure environment variables
 
 ```bash
 cp .env.example .env
-# Открыть .env и заполнить ключи
 ```
 
-Заполни `.env`:
+Fill in `.env`:
 ```
 OPENAI_API_KEY=sk-...
 FAL_KEY=...
-MINIMAX_VOICE_ID=your_voice_id    # см. шаг 3
+MINIMAX_VOICE_ID=your_voice_id    # see step 3
 AVATAR_PHOTO_PATH=avatar/my_photo.jpg
 VOICE_SAMPLE_PATH=voice/my_voice_sample.wav
 ```
 
-### 3. Подготовить голос и фото
+### 3. Prepare voice and photo
 
-**Голос** — если voice_id ещё нет:
-1. Запиши аудиосэмпл своего голоса (минимум 10 секунд, чистый звук)
-2. Сохрани в `voice/my_voice_sample.wav`
-3. Запусти клонирование:
+**Voice** — if you don't have a voice_id yet:
+1. Record an audio sample of your voice (at least 10 seconds, clean sound)
+2. Save it as `voice/my_voice_sample.wav`
+3. Run cloning:
    ```bash
    python voice/clone.py
    ```
-4. Скопируй полученный `voice_id` в `.env` → `MINIMAX_VOICE_ID`
+4. Copy the resulting `voice_id` into `.env` as `MINIMAX_VOICE_ID`
 
-**Фото** — сохрани фронтальный портрет (минимум 512×512, нейтральный фон) в `avatar/my_photo.jpg`
+**Photo** — save a frontal portrait (at least 512x512, neutral background) as `avatar/my_photo.jpg`
 
-### 4. Запустить приложение
+### 4. Run the application
 
 ```bash
 python app.py
 ```
 
-Открой в браузере: http://localhost:7860
+Open in browser: http://localhost:7860
 
-## Структура проекта
+## Project Structure
 
 ```
 video-ai/
-├── app.py                    # Gradio UI (точка входа)
-├── config.py                 # Конфигурация моделей и параметров
+├── app.py                    # Gradio UI (entry point)
+├── config.py                 # Model and parameter configuration
 ├── requirements.txt
 ├── .env.example
 ├── agent/
-│   ├── llm.py               # LLM + MCP клиент + agentic loop
-│   ├── tools.py             # Tool schemas + ресторанный критик
-│   └── pipeline.py          # Оркестратор: ASR → LLM → TTS → Avatar
+│   ├── llm.py               # LLM + MCP client + agentic loop
+│   ├── tools.py             # Tool schemas + restaurant critic skill
+│   └── pipeline.py          # Orchestrator: ASR -> LLM -> TTS -> Avatar
 ├── mcp_servers/
 │   ├── twogis/
-│   │   ├── server.py        # MCP №1: 2GIS (поиск ресторанов)
-│   │   └── README.md        # Документация инструмента
+│   │   ├── server.py        # MCP #1: 2GIS (restaurant search)
+│   │   └── README.md
 │   ├── chocolife/
-│   │   ├── server.py        # MCP №2: Chocolife (акции и скидки)
-│   │   └── README.md        # Документация инструмента
+│   │   ├── server.py        # MCP #2: Chocolife (deals and discounts)
+│   │   └── README.md
 │   └── abr_group/
-│       ├── server.py        # MCP №3: ABR Group (рестораны)
-│       └── README.md        # Документация инструмента
+│       ├── server.py        # MCP #3: ABR Group (restaurant info)
+│       └── README.md
 ├── voice/
-│   ├── clone.py             # Скрипт клонирования голоса
-│   ├── tts.py               # Генерация TTS
-│   └── my_voice_sample.wav  # (добавить самостоятельно)
+│   ├── clone.py             # Voice cloning script
+│   ├── tts.py               # TTS generation
+│   └── my_voice_sample.wav  # (add your own)
 ├── avatar/
-│   ├── generate.py          # Генерация видео через Kling Avatar V2
-│   └── my_photo.jpg         # (добавить самостоятельно)
+│   ├── generate.py          # Video generation via Kling Avatar V2
+│   └── my_photo.jpg         # (add your own)
 └── assets/
-    └── demo.mp4             # (добавить после записи)
+    └── demo.mp4             # (add after recording)
 ```
 
-## Примеры запросов
+## Example Queries
 
-- «Где поужинать в центре Алматы на двоих, бюджет 15 000 тг?»
-- «Найди скидки на суши»
-- «Что есть в Del Papa?»
-- *(прислать фото ресторана)* → агент определит уровень заведения
+- "Where to have dinner in central Almaty for two, budget 15,000 tenge?"
+- "Find restaurant discounts in Almaty"
+- "What does Del Papa have and how much does it cost?"
+- *(send a restaurant photo)* -> the agent will determine the establishment level
 
-## Оптимизация стоимости
+## Cost Optimization
 
-- **Model routing**: GPT-4o-mini для всего (vision + text) — дешевле GPT-4o
-- **Caching**: результаты Chocolife кэшируются на 5 минут (`CACHE_TTL = 300`), ABR Group — на 10 минут (`CACHE_TTL = 600`)
-- **`detail: "low"`** для всех vision-вызовов — экономия токенов
-- **Видео генерируется по запросу** — чекбокс «Видео-ответ» по умолчанию выключен
-- Ответы ограничены 600 символами → короткое аудио → короткое видео
+- **Model routing**: GPT-4o-mini for everything (vision + text) — cheaper than GPT-4o
+- **Caching**: Chocolife results cached for 5 min, ABR Group for 10 min
+- **`detail: "low"`** for all vision calls — saves tokens
+- **Video on demand** — the "Video response" checkbox is off by default
+- Responses limited to 600 chars -> short audio -> short video
 
-## Примерный бюджет
+## Approximate Budget
 
-| Сервис | Стоимость |
-|--------|-----------|
-| fal.ai (Kling Avatar V2) | ~$0.05–0.10 за видео |
-| fal.ai (MiniMax TTS) | ~$0.03–0.05 за ответ |
-| fal.ai (Voice Clone) | ~$0.50 (один раз) |
-| OpenAI (GPT-4o-mini + Whisper) | ~$0.01–0.02 за запрос |
-| **Итого на проект** | **~$5–15** |
+| Service | Cost |
+|---------|------|
+| fal.ai (Kling Avatar V2) | ~$0.05-0.10 per video |
+| fal.ai (MiniMax TTS) | ~$0.03-0.05 per response |
+| fal.ai (Voice Clone) | ~$0.50 (one-time) |
+| OpenAI (GPT-4o-mini + Whisper) | ~$0.01-0.02 per request |
+| **Total for project** | **~$5-15** |
+
+## What Could Be Improved
+
+- Add multi-language support (currently Russian only)
+- Implement streaming LLM responses for faster perceived latency
+- Add a local cache layer (SQLite/Redis) instead of in-memory dicts for MCP results
+- Support more restaurant data sources beyond Almaty
+- Add user authentication and personalized recommendation history

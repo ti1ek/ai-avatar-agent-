@@ -8,16 +8,13 @@ Usage:
     python voice/clone.py
 """
 import asyncio
-import os
 import sys
 from pathlib import Path
 
 import fal_client
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
-from config import FAL_KEY, VOICE_CLONE_MODEL, VOICE_SAMPLE_PATH
-
-os.environ["FAL_KEY"] = FAL_KEY
+from config import VOICE_CLONE_MODEL, VOICE_SAMPLE_PATH
 
 
 async def upload_voice_sample(local_path: str) -> str:
@@ -58,8 +55,7 @@ async def main() -> None:
         sys.exit(1)
 
     audio_url = await upload_voice_sample(sample_path)
-    voice_id = await clone_voice(audio_url)
-    return voice_id
+    await clone_voice(audio_url)
 
 
 if __name__ == "__main__":

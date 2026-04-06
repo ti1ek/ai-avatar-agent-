@@ -5,7 +5,6 @@ Contains:
 - MCP tool wrappers (search_deals, get_restaurant_info)
 - Custom skill: analyze_restaurant_photo (restaurant critic)
 """
-import base64
 import json
 from openai import AsyncOpenAI
 

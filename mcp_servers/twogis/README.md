@@ -1,44 +1,44 @@
-# MCP №1: 2GIS
+# MCP #1: 2GIS
 
-Поиск ресторанов Алматы через парсинг [2gis.kz](https://2gis.kz).
+Search restaurants in Almaty by scraping [2gis.kz](https://2gis.kz).
 
-## Инструмент
+## Tool
 
 ### `search_restaurants`
 
-Возвращает список ресторанов по поисковому запросу.
+Returns a list of restaurants matching a search query.
 
-**Параметры:**
+**Parameters:**
 
-| Параметр | Тип | По умолчанию | Описание |
-|----------|-----|--------------|----------|
-| `query` | string | `"рестораны"` | Поисковый запрос: `рестораны`, `суши`, `кофейня`, `бизнес-ланч`, `итальянская кухня` и др. |
-| `city` | string | `"almaty"` | Slug города для URL 2GIS |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `query` | string | `"рестораны"` | Search query: `рестораны`, `суши`, `кофейня`, `бизнес-ланч`, `итальянская кухня`, etc. |
+| `city` | string | `"almaty"` | City slug for the 2GIS URL |
 
-**Пример ответа:**
+**Example response:**
 
 ```json
 [
   {
     "name": "Lova Kitchen",
-    "category": "Лаундж-бар",
+    "category": "Lounge bar",
     "rating": "4.7",
-    "reviews": "4403 оценки",
-    "address": "Ораза Жандосова улица, 57, Алматы",
+    "reviews": "4403 ratings",
+    "address": "Oraza Zhandosova st., 57, Almaty",
     "url": "https://2gis.kz/almaty/firm/..."
   }
 ]
 ```
 
-## Реализация
+## Implementation
 
-- **Парсинг**: Playwright (headless Chromium) — сайт рендерится динамически
-- **Селектор карточек**: `[class*="_1kf6gff"]`
-- **Лимит**: первые 8 результатов за запрос
-- **Кэш**: 5 минут (`CACHE_TTL = 300`)
-- **Протокол**: MCP stdio
+- **Scraping**: Playwright (headless Chromium) — the site renders dynamically
+- **Card selector**: `[class*="_1kf6gff"]`
+- **Limit**: first 8 results per query
+- **Cache**: 5 minutes (`CACHE_TTL = 300`)
+- **Protocol**: MCP stdio
 
-## Запуск (для отладки)
+## Run (for debugging)
 
 ```bash
 python mcp_servers/twogis/server.py

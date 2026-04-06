@@ -81,7 +81,7 @@ async def _process(
         for m in updated_history
     ]
 
-    # Видео или заглушка-фото
+    # Show video or fallback to static photo
     if video_url:
         avatar_update = gr.update(visible=False)
         video_update = gr.update(value=video_url, visible=True)

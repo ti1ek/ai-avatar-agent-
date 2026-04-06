@@ -1,8 +1,8 @@
 """
-MCP-сервер №3: 2GIS
-Поиск ресторанов Алматы через парсинг 2gis.kz (Playwright).
-Запуск: python mcp_servers/twogis/server.py
-Протокол: stdio
+MCP server #1: 2GIS
+Search restaurants in Almaty by scraping 2gis.kz (Playwright).
+Run: python mcp_servers/twogis/server.py
+Protocol: stdio
 """
 import json
 import re

@@ -1,10 +1,9 @@
 """
-MCP-сервер №1: Chocolife
-Поиск скидок и акций на рестораны в Алматы через парсинг chocolife.me (Playwright).
-Запуск: python mcp_servers/chocolife/server.py
-Протокол: stdio
+MCP server #2: Chocolife
+Search deals and discounts for Almaty restaurants by scraping chocolife.me (Playwright).
+Run: python mcp_servers/chocolife/server.py
+Protocol: stdio
 """
-import asyncio
 import json
 import time
 from typing import Any
