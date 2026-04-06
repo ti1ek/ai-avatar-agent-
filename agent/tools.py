@@ -19,6 +19,33 @@ TOOL_SCHEMAS = [
     {
         "type": "function",
         "function": {
+            "name": "search_restaurants",
+            "description": (
+                "Search for restaurants in Almaty via 2GIS. "
+                "Use this for general restaurant searches: by cuisine, area, vibe, or budget. "
+                "Returns real restaurant names, ratings, addresses from 2GIS."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "query": {
+                        "type": "string",
+                        "description": "Search query, e.g. 'рестораны', 'суши', 'кофейня', 'бизнес-ланч', 'итальянская кухня'",
+                        "default": "рестораны",
+                    },
+                    "city": {
+                        "type": "string",
+                        "description": "City slug for 2GIS, default 'almaty'",
+                        "default": "almaty",
+                    },
+                },
+                "required": [],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
             "name": "search_deals",
             "description": (
                 "Find deals, discounts and coupons for Almaty restaurants via Chocolife. "

@@ -17,11 +17,10 @@
    ┌────┼────────────────────┐
    │    │                    │
    ▼    ▼                    ▼
-MCP №1       MCP №2     Custom Skill
-Chocolife    ABR Group  analyze_restaurant_photo
-search_deals get_        (GPT-4o-mini vision)
-             restaurant_
-             info
+MCP №1        MCP №2       MCP №3      Custom Skill
+2GIS          Chocolife    ABR Group   analyze_restaurant_photo
+search_        search_      get_        (GPT-4o-mini vision)
+restaurants   deals        restaurant_info
         │
         ▼
    Текстовый ответ
@@ -41,8 +40,9 @@ search_deals get_        (GPT-4o-mini vision)
 |-----------|-----------|
 | ASR | OpenAI Whisper-1 |
 | LLM Brain | GPT-4o-mini (tool calling + vision) |
-| MCP №1 | Chocolife — скидки и акции на рестораны |
-| MCP №2 | ABR Group — детальная информация о ресторанах |
+| MCP №1 | 2GIS — поиск ресторанов Алматы |
+| MCP №2 | Chocolife — скидки и акции на рестораны |
+| MCP №3 | ABR Group — детальная информация о ресторанах |
 | Custom Skill | Ресторанный критик (analyze_restaurant_photo) |
 | TTS | fal.ai MiniMax Speech-02-HD |
 | Voice Clone | fal.ai MiniMax Voice Clone |
@@ -112,11 +112,14 @@ video-ai/
 │   ├── tools.py             # Tool schemas + ресторанный критик
 │   └── pipeline.py          # Оркестратор: ASR → LLM → TTS → Avatar
 ├── mcp_servers/
+│   ├── twogis/
+│   │   ├── server.py        # MCP №1: 2GIS (поиск ресторанов)
+│   │   └── README.md        # Документация инструмента
 │   ├── chocolife/
-│   │   ├── server.py        # MCP №1: Chocolife (акции и скидки)
+│   │   ├── server.py        # MCP №2: Chocolife (акции и скидки)
 │   │   └── README.md        # Документация инструмента
 │   └── abr_group/
-│       ├── server.py        # MCP №2: ABR Group (рестораны)
+│       ├── server.py        # MCP №3: ABR Group (рестораны)
 │       └── README.md        # Документация инструмента
 ├── voice/
 │   ├── clone.py             # Скрипт клонирования голоса
