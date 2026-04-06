@@ -40,10 +40,12 @@ async def generate_tts(text: str) -> str:
         TTS_MODEL,
         arguments={
             "text": text,
-            "voice_id": MINIMAX_VOICE_ID,
+            "voice_setting": {
+                "voice_id": MINIMAX_VOICE_ID,
+                "speed": 1.0,
+                "pitch": 0,
+            },
             "language": TTS_LANGUAGE,
-            "speed": 1.0,
-            "pitch": 0,
         },
         with_logs=False,
     )

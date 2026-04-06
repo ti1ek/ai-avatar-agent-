@@ -17,7 +17,7 @@ LLM_MODEL = "gpt-4o-mini"           # cheap, fast, tool calling, vision
 LLM_MODEL_HEAVY = "gpt-4o-mini"     # same — gpt-4o-mini handles vision well
 ASR_MODEL = "whisper-1"
 
-TTS_MODEL = "fal-ai/minimax/speech-02-turbo"
+TTS_MODEL = "fal-ai/minimax/speech-02-hd"
 VOICE_CLONE_MODEL = "fal-ai/minimax/voice-clone"
 AVATAR_MODEL = "fal-ai/kling-video/ai-avatar/v2"        # primary ~$0.014/sec
 
