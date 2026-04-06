@@ -8,7 +8,7 @@ A personal AI assistant for Almaty restaurants with a talking avatar. Accepts te
             ┌──────────────────────────────────────────────────┐
             │                   USER INPUT                     │
             │          text  /  voice  /  photo                │
-            └─────────────┬──────────────────────┬────────────┘
+            └─────────────┬──────────────────────┬─────────────┘
                           │ voice                │ text / photo
                           v                      │
                   ┌───────────────┐              │
@@ -30,8 +30,8 @@ A personal AI assistant for Almaty restaurants with a talking avatar. Accepts te
     │  search_    │  │  search_    │  │  get_rest_  │  │ restaurant_ │
     │ restaurants │  │   deals     │  │    info     │  │photo(vision)│
     └──────┬──────┘  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘
-           │                │                 │                │
-           └────────────────┴──────────┬──────┴────────────────┘
+           │                │                │                │
+           └────────────────┴──────────┬─────┴────────────────┘
                                        │
                                        v
                           ┌────────────────────────┐
@@ -46,8 +46,8 @@ A personal AI assistant for Almaty restaurants with a talking avatar. Accepts te
            │  Speech-02-HD,         │   │  (Kling AI Avatar V2)  │
            │  cloned voice)         │   │  photo + audio → video │
            └────────────┬───────────┘   └────────────┬───────────┘
-                        │                             │
-                        └──────────────┬──────────────┘
+                        │                            │
+                        └──────────────┬─────────────┘
                                        │
                                        v
                           ┌────────────────────────┐
