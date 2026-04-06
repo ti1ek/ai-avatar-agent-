@@ -5,33 +5,55 @@ A personal AI assistant for Almaty restaurants with a talking avatar. Accepts te
 ## Architecture
 
 ```
-User (text / voice / photo)
-        |
-        v
-   ASR (Whisper)            <- speech-to-text
-        |
-        v
-   LLM GPT-4o-mini          <- agent brain + session memory
-   + Function Calling
-        |
-   +----|--------------------+
-   |    |                    |
-   v    v                    v
-MCP #1        MCP #2       MCP #3        Custom Skill
-2GIS          Chocolife    ABR Group     analyze_restaurant_photo
-search_       search_      get_          (GPT-4o-mini vision)
-restaurants   deals        restaurant_info
-        |
-        v
-   Text response
-        |
-        +---> TTS (fal.ai MiniMax Speech-02-HD, cloned voice)
-        |                    |
-        |                    v
-        +---> Avatar Video (fal.ai Kling AI Avatar V2) <- student photo
-                             |
-                             v
-                       Gradio UI (text + video)
+            ┌──────────────────────────────────────────────────┐
+            │                   USER INPUT                     │
+            │          text  /  voice  /  photo                │
+            └─────────────┬──────────────────────┬────────────┘
+                          │ voice                │ text / photo
+                          v                      │
+                  ┌───────────────┐              │
+                  │ ASR (Whisper) │              │
+                  │ speech → text │              │
+                  └───────┬───────┘              │
+                          └────────────┬─────────┘
+                                       │
+                                       v
+            ┌──────────────────────────────────────────────────┐
+            │                LLM GPT-4o-mini                   │
+            │           Function Calling + Memory              │
+            └───┬──────────────┬──────────────┬─────────────┬──┘
+                │              │              │             │
+                v              v              v             v
+    ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐
+    │   MCP #1    │  │   MCP #2    │  │   MCP #3    │  │Custom Skill │
+    │    2GIS     │  │  Chocolife  │  │  ABR Group  │  │ analyze_    │
+    │  search_    │  │  search_    │  │  get_rest_  │  │ restaurant_ │
+    │ restaurants │  │   deals     │  │    info     │  │photo(vision)│
+    └──────┬──────┘  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘
+           │                │                 │                │
+           └────────────────┴──────────┬──────┴────────────────┘
+                                       │
+                                       v
+                          ┌────────────────────────┐
+                          │      Text Response     │
+                          └────────────┬───────────┘
+                                       │
+                        ┌──────────────┴──────────────┐
+                        │                             │
+                        v                             v
+           ┌────────────────────────┐   ┌────────────────────────┐
+           │  TTS (MiniMax          │   │  Avatar Video          │
+           │  Speech-02-HD,         │   │  (Kling AI Avatar V2)  │
+           │  cloned voice)         │   │  photo + audio → video │
+           └────────────┬───────────┘   └────────────┬───────────┘
+                        │                             │
+                        └──────────────┬──────────────┘
+                                       │
+                                       v
+                          ┌────────────────────────┐
+                          │       Gradio UI        │
+                          │  text + audio + video  │
+                          └────────────────────────┘
 ```
 
 ## Components
@@ -48,6 +70,16 @@ restaurants   deals        restaurant_info
 | Voice Clone | fal.ai MiniMax Voice Clone |
 | Avatar Video | fal.ai Kling AI Avatar V2 |
 | Frontend | Gradio |
+
+## Model Choices
+
+| Component | Model | Why |
+|-----------|-------|-----|
+| LLM | GPT-4o-mini | Cheapest model with both vision and tool calling support — no need to pay for GPT-4o |
+| ASR | OpenAI Whisper-1 | Native OpenAI integration, same API key, reliable Russian transcription |
+| TTS | MiniMax Speech-02-HD | Best quality cloned-voice TTS available on fal.ai at reasonable cost |
+| Voice Clone | MiniMax Voice Clone | 10-second sample is enough, $0.50 one-time cost, integrates directly with Speech-02-HD |
+| Avatar Video | Kling Avatar V2 | More affordable alternative to Creatify Aurora with multi-style support; sufficient quality for the project budget |
 
 ## Quick Start
 
@@ -128,8 +160,12 @@ video-ai/
 │   ├── generate.py          # Video generation via Kling Avatar V2
 │   └── my_photo.jpg         # (add your own)
 └── assets/
-    └── demo.mp4             # (add after recording)
+    └── demo.mp4             # (video recording)
 ```
+
+## Interface
+
+![Gradio UI](assets/screen.png)
 
 ## Example Queries
 
