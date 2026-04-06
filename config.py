@@ -32,11 +32,6 @@ MAX_RESPONSE_CHARS = 600      # keep TTS audio short (~20-30 sec)
 
 # ── MCP server commands ────────────────────────────────────────────────────────
 MCP_SERVERS = {
-    "twogis": {
-        "command": "python",
-        "args": ["mcp_servers/twogis/server.py"],
-        "description": "Search restaurants / cafes / bars in Almaty via 2GIS",
-    },
     "chocolife": {
         "command": "python",
         "args": ["mcp_servers/chocolife/server.py"],

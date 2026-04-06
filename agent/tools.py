@@ -19,32 +19,6 @@ TOOL_SCHEMAS = [
     {
         "type": "function",
         "function": {
-            "name": "search_restaurants",
-            "description": (
-                "Search for restaurants, cafes, bars in Almaty via 2GIS. "
-                "Use this when user asks about where to eat, dining options, "
-                "restaurants by cuisine type or location."
-            ),
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "query": {
-                        "type": "string",
-                        "description": "Search query, e.g. 'ресторан на двоих', 'суши', 'кофейня центр'",
-                    },
-                    "location": {
-                        "type": "string",
-                        "description": "City name, default 'Алматы'",
-                        "default": "Алматы",
-                    },
-                },
-                "required": ["query"],
-            },
-        },
-    },
-    {
-        "type": "function",
-        "function": {
             "name": "search_deals",
             "description": (
                 "Find deals, discounts and coupons for Almaty restaurants via Chocolife. "
