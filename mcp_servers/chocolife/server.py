@@ -1,5 +1,5 @@
 """
-MCP-сервер №2: Chocolife
+MCP-сервер №1: Chocolife
 Поиск скидок и акций на рестораны в Алматы через парсинг chocolife.me (Playwright).
 Запуск: python mcp_servers/chocolife/server.py
 Протокол: stdio
@@ -58,13 +58,12 @@ async def _scrape_chocolife(category: str, city: str) -> list[dict]:
                     if not title:
                         continue
 
-                    # Restaurant name from stats area
-                    stats_el = await card.query_selector(".deal__stats")
-                    restaurant = await stats_el.inner_text() if stats_el else ""
+                    # Restaurant name — first span inside .deal__desc
+                    name_el = await card.query_selector(".deal__desc span:first-child")
+                    restaurant = await name_el.inner_text() if name_el else ""
 
-                    # Description
-                    desc_el = await card.query_selector(".deal__desc")
-                    description = await desc_el.inner_text() if desc_el else title
+                    # Description — the deal title is the offer description
+                    description = title
 
                     # Location
                     place_el = await card.query_selector(".deal__place span")

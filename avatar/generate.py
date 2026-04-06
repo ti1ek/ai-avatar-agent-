@@ -56,6 +56,12 @@ async def generate_avatar_video(audio_path: str) -> str:
         arguments={
             "image_url": image_url,
             "audio_url": audio_url,
+            "prompt": (
+                "A calm, composed person speaking naturally. "
+                "Minimal head movement, subtle and relaxed facial expressions. "
+                "No exaggerated eyebrow raises or wide eye movements. "
+                "Steady posture, gentle lip sync, professional and neutral demeanor."
+            ),
         },
         with_logs=True,
     )

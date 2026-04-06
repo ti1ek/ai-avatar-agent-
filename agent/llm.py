@@ -12,6 +12,7 @@ import asyncio
 import base64
 import json
 import os
+import sys
 from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Any
@@ -37,11 +38,9 @@ SYSTEM_PROMPT = """Ты — ИИ-аватар, персональный асси
 Правила:
 - Отвечай всегда на русском языке
 - Используй инструменты (MCP tools) для поиска реальных данных — НИКОГДА не выдумывай рестораны
-- Если пользователь прислал фото ресторана И в сообщении УЖЕ есть блок [Оценка ресторана по фото] — используй эти данные напрямую, НЕ вызывай analyze_restaurant_photo повторно
-- Если пользователь прислал фото ресторана БЕЗ блока оценки — вызови analyze_restaurant_photo
-- Когда есть результат оценки ресторана, обязательно укажи: уровень заведения, атмосферу, для кого подходит
+- Если пользователь прислал фото — это ПЕРВЫЙ приоритет: сразу вызови analyze_restaurant_photo (если фото ресторана или заведения) и включи результат в ответ. Если фото нерелевантно (люди, природа, животные и т.д.) — скажи что фото не подходит для оценки заведения
 - Если спрашивают о скидках/акциях — используй search_deals (Chocolife)
-- Если спрашивают о конкретном ресторане (Del Papa, Бочка, Pinta, Chagala) — используй get_restaurant_info
+- Если спрашивают о конкретном ресторане ABR Group (Del Papa, AUYL, SPIROS и др.) — используй get_restaurant_info
 - Давай конкретные рекомендации: уровень заведения, атмосфера, для кого подходит, стоит ли идти
 - Отвечай лаконично: максимум 3–4 предложения (ответ будет озвучен голосом)
 - Никогда не пиши "Продолжение следует...", "To be continued" или любые обрывающие фразы
@@ -62,6 +61,7 @@ class MCPAgentSession:
         self._mcp_tools: dict[str, Any] = {}   # name → mcp tool metadata
         self._mcp_server_for_tool: dict[str, str] = {}  # tool_name → server_name
         self._exit_stacks: list[Any] = []
+        self._current_image_url: str | None = None  # set per chat() call
 
     async def __aenter__(self) -> "MCPAgentSession":
         await self._start_mcp_servers()
@@ -81,7 +81,7 @@ class MCPAgentSession:
         for server_name, cfg in MCP_SERVERS.items():
             try:
                 params = StdioServerParameters(
-                    command=cfg["command"],
+                    command=sys.executable,
                     args=[str(project_root / cfg["args"][0])],
                     env={**os.environ},
                 )
@@ -123,7 +123,10 @@ class MCPAgentSession:
         """Route tool call to MCP or local skill."""
         if tool_name == "analyze_restaurant_photo":
             try:
-                result = await analyze_restaurant_photo(arguments["image_url"])
+                url = arguments.get("image_url", "")
+                if url == "current_image" or not url:
+                    url = self._current_image_url or ""
+                result = await analyze_restaurant_photo(url)
                 return json.dumps(result, ensure_ascii=False)
             except Exception as e:
                 return json.dumps({"error": str(e)})
@@ -173,6 +176,7 @@ class MCPAgentSession:
             (assistant_text, tool_calls_log) where tool_calls_log is
             a list of human-readable strings describing what was called.
         """
+        self._current_image_url = image_url
         messages = self._build_messages(history, user_text, image_url)
         tool_calls_log: list[str] = []
 
@@ -193,7 +197,7 @@ class MCPAgentSession:
             # Append assistant message (may contain tool_calls)
             messages.append(msg)  # type: ignore[arg-type]
 
-            if choice.finish_reason == "tool_calls" and msg.tool_calls:
+            if msg.tool_calls:
                 # Execute all tool calls in parallel
                 tasks = []
                 for tc in msg.tool_calls:

@@ -5,7 +5,6 @@ Entry point for the Gradio UI.
 """
 import asyncio
 import base64
-import tempfile
 from pathlib import Path
 from typing import Any
 
@@ -100,51 +99,18 @@ async def run_pipeline(
         result["assistant_text"] = "Пожалуйста, введите текст или запишите голосовое сообщение."
         return result
 
-    # ── Step 2: Build image URL + auto-run restaurant critic skill ───────────
+    # ── Step 2: Build image URL ────────────────────────────────────────────────
     image_url: str | None = None
-    photo_analysis: str = ""
     if image_path:
         try:
             image_url = _image_to_data_uri(image_path)
         except Exception as e:
             print(f"[Image] Error converting image: {e}")
 
-        if image_url:
-            try:
-                from agent.tools import analyze_restaurant_photo
-                import json as _json
-                analysis = await analyze_restaurant_photo(image_url)
-                photo_analysis = (
-                    f"\n\n[Оценка ресторана по фото]: "
-                    f"Уровень: {analysis.get('level', '?')}, "
-                    f"Статус: {analysis.get('status', '?')}, "
-                    f"Описание: {analysis.get('description', '?')} "
-                    f"(уверенность: {analysis.get('confidence', 0):.0%})"
-                )
-                print(f"[Skill] Photo analysis: {analysis}")
-            except Exception as e:
-                print(f"[Skill] analyze_restaurant_photo error: {e}")
-
-    # Append skill result to user text so LLM uses it
-    if photo_analysis:
-        if user_text:
-            enriched_user_text = user_text + photo_analysis + "\n\nОпираясь на этот анализ, дай рекомендацию."
-        else:
-            enriched_user_text = (
-                "Фото ресторана уже проанализировано автоматически."
-                + photo_analysis
-                + "\n\nДай краткую рекомендацию по этому ресторану на основе результатов анализа. "
-                "НЕ вызывай analyze_restaurant_photo — анализ уже выполнен."
-            )
-    else:
-        enriched_user_text = user_text
+    enriched_user_text = user_text or "Проанализируй это фото ресторана."
 
     # ── Step 3: LLM + MCP tool calling ────────────────────────────────────────
-    # If photo was already analyzed by skill, don't re-send base64 to LLM
-    # (saves tokens and avoids silent API failures due to payload size)
-    llm_image_url = None if photo_analysis else image_url
-
-    print(f"[LLM] Calling session.chat, text_len={len(enriched_user_text)}, has_image={llm_image_url is not None}", flush=True)
+    print(f"[LLM] Calling session.chat, text_len={len(enriched_user_text)}, has_image={image_url is not None}", flush=True)
     try:
         import asyncio as _asyncio
         session = await get_mcp_session()
@@ -152,7 +118,7 @@ async def run_pipeline(
             session.chat(
                 history=conversation_history,
                 user_text=enriched_user_text,
-                image_url=llm_image_url,
+                image_url=image_url,
             ),
             timeout=60.0,
         )

@@ -1,5 +1,5 @@
 """
-MCP-сервер №3: ABR Group
+MCP-сервер №2: ABR Group
 Информация о ресторанах сети ABR Group через парсинг abr.kz (Playwright).
 Запуск: python mcp_servers/abr_group/server.py
 Протокол: stdio
@@ -94,25 +94,38 @@ async def _scrape_restaurant(name: str) -> dict:
             text = await page.inner_text("body")
             lines = [l.strip() for l in text.split("\n") if l.strip()]
 
-            # Description (first long line after restaurant name)
+            # Description — first long line not matching the restaurant name
             for line in lines:
                 if len(line) > 60 and name_lower[:4] not in line.lower()[:10]:
                     result["description"] = line[:300]
                     break
 
-            # Addresses, phones, hours
+            # Parse structure: "Алматы" → address → "Контакты" → phone → "Работаем" → hours
+            # Works for both single and multi-location restaurants
+            KZ_CITIES = {"Алматы", "Астана", "Нур-Султан", "Атырау", "Шымкент", "Актау", "Актобе", "Павлодар"}
+            HOUR_DAYS = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"]
             addresses = []
             i = 0
             while i < len(lines):
                 line = lines[i]
-                # Address patterns
-                if any(kw in line for kw in ["ул.", "б-р.", "пр.", "мкр.", "ТРЦ", "микрорайон"]):
+                # Single-city pattern: "Алматы" → next line is the address (not another city name)
+                if line in KZ_CITIES and i + 1 < len(lines) and lines[i + 1] not in KZ_CITIES:
+                    addr_info = {"address": lines[i + 1]}
+                    for j in range(i + 2, min(i + 7, len(lines))):
+                        if lines[j].startswith("+7"):
+                            addr_info["phone"] = lines[j]
+                        if ":00" in lines[j] and any(d in lines[j] for d in HOUR_DAYS):
+                            addr_info["hours"] = lines[j]
+                    addresses.append(addr_info)
+                    i += 2
+                    continue
+                # Multi-city / keyword pattern: address line followed by Контакты → phone → Работаем → hours
+                elif line not in KZ_CITIES and i + 1 < len(lines) and lines[i + 1] == "Контакты":
                     addr_info = {"address": line}
-                    # Look ahead for phone and hours
                     for j in range(i + 1, min(i + 6, len(lines))):
                         if lines[j].startswith("+7"):
                             addr_info["phone"] = lines[j]
-                        if "с " in lines[j] and ":00" in lines[j]:
+                        if ":00" in lines[j] and any(d in lines[j] for d in HOUR_DAYS):
                             addr_info["hours"] = lines[j]
                     addresses.append(addr_info)
                 i += 1

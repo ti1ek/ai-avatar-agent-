@@ -5,12 +5,22 @@ Multimodal restaurant guide for Almaty.
 Run:
     python app.py
 """
+import subprocess
 import sys
 from pathlib import Path
 
 import gradio as gr
 
 sys.path.insert(0, str(Path(__file__).parent))
+
+# Ensure Playwright Chromium is installed (required by MCP servers)
+try:
+    from playwright.sync_api import sync_playwright
+    with sync_playwright() as p:
+        p.chromium.executable_path  # raises if not installed
+except Exception:
+    print("[Setup] Chromium not found — installing via playwright...")
+    subprocess.run([sys.executable, "-m", "playwright", "install", "chromium"], check=True)
 
 from agent.pipeline import run_pipeline, transcribe_audio
 
@@ -66,18 +76,10 @@ async def _process(
     if assistant_text:
         updated_history.append({"role": "assistant", "content": assistant_text})
 
-    # Текст в чате только без видео
-    if generate_video:
-        chat_display = [
-            {"role": m["role"], "content": m["content"]}
-            for m in updated_history
-            if m["role"] == "user"
-        ]
-    else:
-        chat_display = [
-            {"role": m["role"], "content": m["content"]}
-            for m in updated_history
-        ]
+    chat_display = [
+        {"role": m["role"], "content": m["content"]}
+        for m in updated_history
+    ]
 
     # Видео или заглушка-фото
     if video_url:
@@ -97,6 +99,12 @@ CSS = """
 #avatar_placeholder label, #avatar_placeholder .label-wrap { display: none !important; }
 #video_output label, #video_output .label-wrap { display: none !important; }
 
+/* Hide toolbar buttons (download, share, fullscreen) on image and video */
+#avatar_placeholder .icon-button-wrapper,
+#avatar_placeholder button[aria-label],
+#video_output .icon-button-wrapper,
+#video_output button[aria-label] { display: none !important; }
+
 #avatar_placeholder, #avatar_placeholder > div { padding: 0 !important; background: transparent !important; }
 #avatar_placeholder img { width: 100% !important; height: 480px !important; object-fit: cover !important; display: block !important; }
 #video_output, #video_output > div { padding: 0 !important; background: #000 !important; box-shadow: none !important; border: none !important; }
@@ -111,8 +119,7 @@ CSS = """
 
 #voice_input select { display: none !important; }
 
-/* Remove all loading animations and spinners */
-.generating { display: none !important; }
+/* Hide default Gradio loaders */
 .eta-bar { display: none !important; }
 .progress-bar { display: none !important; }
 .progress-level { display: none !important; }
@@ -122,6 +129,23 @@ CSS = """
 .loader { display: none !important; }
 .wrap.default.full.unpad_bottom.hide { display: none !important; }
 
+/* Custom loading indicator */
+.generating::after {
+    content: "Думаю...";
+    display: block;
+    text-align: center;
+    color: #f97316;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 8px;
+    animation: pulse-text 1.2s ease-in-out infinite !important;
+    animation-duration: 1.2s !important;
+}
+@keyframes pulse-text {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
+
 /* Remove image upload animation/overlay */
 .image-container .overlay { display: none !important; }
 .upload-container .overlay { display: none !important; }
@@ -129,10 +153,9 @@ CSS = """
 .pending { animation: none !important; opacity: 1 !important; }
 .uploading { animation: none !important; }
 
-/* Disable all pulse/fade animations globally */
-* { animation-duration: 0s !important; transition-duration: 0s !important; }
-
-/* But keep button hover transitions readable */
+/* Disable upload/pending animations */
+.pending { animation: none !important; opacity: 1 !important; }
+.uploading { animation: none !important; }
 button { transition: background-color 0.1s !important; }
 """
 
@@ -175,7 +198,12 @@ with gr.Blocks(title="Ресторанный гид Алматы") as demo:
                 interactive=False,
                 elem_id="avatar_placeholder",
             )
-            video_output = gr.Video(show_label=False, height=480, visible=False, elem_id="video_output")
+            video_output = gr.Video(
+                show_label=False,
+                height=480,
+                visible=False,
+                elem_id="video_output",
+            )
 
     with gr.Row():
         with gr.Column(scale=3, elem_id="left_col"):
@@ -207,7 +235,6 @@ with gr.Blocks(title="Ресторанный гид Алматы") as demo:
             ["Найди скидки на рестораны в Алматы", None, None],
             ["Что есть в Del Papa и сколько стоит?", None, None],
             ["Посоветуй кофейню с хорошим Wi-Fi", None, None],
-            ["Где лучше суши в Алматы?", None, None],
         ],
         inputs=[text_input, audio_input, image_input],
         label="Примеры запросов",

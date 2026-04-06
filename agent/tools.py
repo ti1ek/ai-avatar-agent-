@@ -78,7 +78,10 @@ TOOL_SCHEMAS = [
                 "properties": {
                     "image_url": {
                         "type": "string",
-                        "description": "Public URL or base64 data URI of the restaurant/food photo",
+                        "description": (
+                            "URL of the restaurant photo. "
+                            "If the user sent an image directly (not a URL), pass 'current_image' as the value."
+                        ),
                     }
                 },
                 "required": ["image_url"],
