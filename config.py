@@ -19,7 +19,7 @@ LLM_MODEL = "gpt-4o-mini"
 ASR_MODEL = "whisper-1"
 TTS_MODEL = "fal-ai/minimax/speech-02-hd"
 VOICE_CLONE_MODEL = "fal-ai/minimax/voice-clone"
-AVATAR_MODEL = "fal-ai/kling-video/ai-avatar/v2"
+AVATAR_MODEL = "fal-ai/kling-video/v1/pro/ai-avatar"
 
 # Generation params
 TTS_LANGUAGE = "Russian"

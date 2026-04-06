@@ -108,7 +108,7 @@ CSS = """
 #avatar_placeholder, #avatar_placeholder > div { padding: 0 !important; background: transparent !important; }
 #avatar_placeholder img { width: 100% !important; height: 480px !important; object-fit: cover !important; display: block !important; }
 #video_output, #video_output > div { padding: 0 !important; background: #000 !important; box-shadow: none !important; border: none !important; }
-#video_output video { width: 100% !important; height: 480px !important; object-fit: contain !important; display: block !important; }
+#video_output video { width: 100% !important; height: 480px !important; object-fit: cover !important; display: block !important; }
 
 [data-testid="drop-text"] { display: none !important; }
 .drop-text { display: none !important; }
