@@ -95,8 +95,6 @@ async def run_pipeline(
             return result
 
     result["user_text"] = user_text
-    with open("/tmp/process_debug.txt", "a") as f:
-        f.write(f"[pipeline] user_text={user_text!r} image_path={image_path}\n")
 
     if not user_text and not image_path:
         result["assistant_text"] = "Пожалуйста, введите текст или запишите голосовое сообщение."

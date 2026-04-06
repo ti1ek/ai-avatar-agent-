@@ -14,7 +14,6 @@ VOICE_SAMPLE_PATH = os.getenv("VOICE_SAMPLE_PATH", "voice/my_voice_sample.wav")
 
 # ── Models ─────────────────────────────────────────────────────────────────────
 LLM_MODEL = "gpt-4o-mini"           # cheap, fast, tool calling, vision
-LLM_MODEL_HEAVY = "gpt-4o-mini"     # same — gpt-4o-mini handles vision well
 ASR_MODEL = "whisper-1"
 
 TTS_MODEL = "fal-ai/minimax/speech-02-hd"
@@ -27,7 +26,6 @@ TTS_LANGUAGE = "Russian"
 
 # ── Cost optimisation ──────────────────────────────────────────────────────────
 IMAGE_DETAIL = "low"          # pass to vision calls  → cheaper
-CACHE_TTL_SECONDS = 300       # MCP result cache TTL
 MAX_RESPONSE_CHARS = 600      # keep TTS audio short (~20-30 sec)
 
 # ── MCP server commands ────────────────────────────────────────────────────────

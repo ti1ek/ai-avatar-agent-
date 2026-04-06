@@ -2,7 +2,7 @@
 Tool schemas that the LLM can call via function calling.
 
 Contains:
-- MCP tool wrappers (search_restaurants, search_deals, get_restaurant_info)
+- MCP tool wrappers (search_deals, get_restaurant_info)
 - Custom skill: analyze_restaurant_photo (restaurant critic)
 """
 import base64

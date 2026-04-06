@@ -38,8 +38,6 @@ async def _process(
     generate_video: bool,
     history: list[dict],
 ):
-    with open("/tmp/process_debug.txt", "a") as f:
-        f.write(f"[_process] text={text_input!r} audio={audio_input} image={image_input} video={generate_video}\n")
     print(f"[_process] text={text_input!r} audio={audio_input} image={image_input} video={generate_video}", flush=True)
     try:
         result = await run_pipeline(
