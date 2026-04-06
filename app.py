@@ -12,7 +12,23 @@ import gradio as gr
 
 sys.path.insert(0, str(Path(__file__).parent))
 
-from agent.pipeline import run_pipeline
+from agent.pipeline import run_pipeline, transcribe_audio
+
+
+async def _transcribe_to_text(audio_path: str | None, current_text: str) -> str:
+    """Transcribe audio and merge with existing text input."""
+    if not audio_path:
+        return current_text or ""
+    try:
+        transcript = await transcribe_audio(audio_path)
+        if not transcript:
+            return current_text or ""
+        if current_text and current_text.strip():
+            return current_text.strip() + " " + transcript
+        return transcript
+    except Exception as e:
+        print(f"[ASR] Transcribe error: {e}")
+        return current_text or ""
 
 
 async def _process(
@@ -197,6 +213,12 @@ with gr.Blocks(title="Ресторанный гид Алматы") as demo:
         ],
         inputs=[text_input, audio_input, image_input],
         label="Примеры запросов",
+    )
+
+    audio_input.change(
+        fn=_transcribe_to_text,
+        inputs=[audio_input, text_input],
+        outputs=[text_input],
     )
 
     submit_btn.click(
