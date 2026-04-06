@@ -160,7 +160,7 @@ video-ai/
 │   ├── generate.py          # Video generation via Kling Avatar V2
 │   └── my_photo.jpg         # (add your own)
 └── assets/
-    └── demo.mp4             # (video recording)
+    └── demo.mp4             # (video recording is svaed separately, only screen is atatched)
 ```
 
 ## Interface
