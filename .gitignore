@@ -1,0 +1,36 @@
+# Environment
+.env
+venv/
+.venv/
+env/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+*.egg-info/
+dist/
+build/
+
+# Assets (large files — add manually)
+assets/demo.mp4
+*.mp4
+*.mp3
+*.wav
+*.bin
+*.pt
+*.ckpt
+
+# Keep placeholder photos/audio in repo
+!avatar/my_photo.jpg
+!voice/my_voice_sample.wav
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
